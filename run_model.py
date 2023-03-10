@@ -4,10 +4,12 @@ import sys
 import fire
 
 from model_setup_utils import setup_model_in_parallel, load_model
+from prompt import llm_prompts
 
 
 # Function to run inference on LLaMA
 def run_inference(
+    prompts: list,
     checkpoint_directory: str,
     tokenizer_path: str,
     temperature: float = 0.8,
@@ -29,6 +31,9 @@ def run_inference(
     Returns:
         None
     """
+    # Load in Prompts
+    prompts = llm_prompts()
+    
     # Load in local rank and world size, and ensure GPUs are avaialble to perform inference on
     local_rank, world_size = setup_model_in_parallel()
     if local_rank > 0:
@@ -43,8 +48,6 @@ def run_inference(
         maximum_sequence_length,
         maximum_batch_size
     )
-    
-    prompts = []
     
     # Retrieve prompt responses from model
     model_results = generator.generate(
@@ -61,4 +64,4 @@ def run_inference(
     
 
 if __name__ == '__main__':
-    fire.Fire(run_inference)
+    fire.Fire(run_inference, )
